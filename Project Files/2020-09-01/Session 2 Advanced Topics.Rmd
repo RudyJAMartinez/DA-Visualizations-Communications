@@ -1,0 +1,59 @@
+---
+title: "Session Advanced Topics"
+author: "Rudy Martinez"
+date: "9/8/2020"
+output: html_document
+---
+
+## Libraries
+```{r Libraries}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo= TRUE)
+```
+
+### Exercise 1
+Use the data frame `d1` and keep all the rows where age `age` is <= 50
+
+For this task, we need to use `filter()` from `diplyr`
+```{r Exercise 1}
+d2 = filter(d1, age <= 50)
+d2
+```
+
+### Exercise 2
+Use the data frame `d1` and keep all the rows where age `age` is <= 21 and `male` is TRUE
+```{r Exercise 2}
+d3 = filter(d1, age <= 21 | male == TRUE)
+d3
+```
+
+### Exercise 3
+From `d1`, keep only the first two columns labeled `name` and `age`
+```{r Execerise}
+select(d1, name, age)
+```
+
+### Exercise 4
+Extract all the columns with names starting with letter a
+```{r Exercise 4}
+select(d1, starts_with(("a")))
+```
+
+### Exercise 5
+Extract all the numeric columns
+```{r Exercise 5}
+select(d1, is.numeric)
+```
+### Exercise 6
+Rename `name` as `first_name` and rename `age` as `age_in_years`
+```{r Exercise}
+rename(d1, 
+       first_name = name,
+       age_in_years = age)
+```
+

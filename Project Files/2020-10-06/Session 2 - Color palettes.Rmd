@@ -1,0 +1,97 @@
+---
+title: "Premade color palettes"
+author: "Ashwin Malshe"
+date: "10/06/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+theme_set(theme_minimal()) # this will set the default theme to theme_minimal
+```
+
+Although you can create your own color palettes in R or pass on your own colors to `ggplot2` using `scale_color_manual()` and `scale_fill_manual()`, there are also a few packages that already have nice color palettes ready to use out of the box.
+
+Here I give examples of two such palettes.
+
+## `wesanderson`
+
+The first set of palettes comes from [Wes Anderson](https://en.wikipedia.org/wiki/Wes_Anderson) movies!
+
+You can install the package from CRAN by typing this in the console:
+
+install.packages("wesanderson")
+
+The package documentation is available here:
+https://github.com/karthik/wesanderson
+
+Let's try it out.
+
+**Warning**: Most of the palettes in this package have only 4-5 discrete colors. This means that if you have more than 4-5 levels in a variable, you can't use these palettes.
+
+```{r}
+library(wesanderson)
+```
+
+Import the palette you want and assign to an object.
+
+```{r}
+pal1 <- wes_palette("BottleRocket1")
+```
+
+
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(aes(color = class)) +
+  scale_color_manual(values = pal1)
+```
+
+Exercise for you - 
+
+Recreate the above plot using `wes_palette("Rushmore1")`. It has only 5 colors and `class` variable in `mpg` has sevel levels. How will you tackle that?
+
+
+```{r}
+pal2 <- wes_palette("Darjeeling1")
+```
+
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(aes(color = class)) +
+  scale_color_manual(values = c(pal2, "#a3be8c", "#0063c4"))
+```
+
+## `viridis`
+
+There are many great developers in the Rstats community. One of them is Bob Rudis. He co-created `viridis` package which has so far some of the best color palettes.
+
+Install the package from CRAN by typing this in the console:
+
+install.packages("viridis")
+
+The package documentation is available here:
+https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+
+
+```{r}
+library(viridis)
+```
+By default this package assumes a continuous color scale. That's why for discrete colors use `discrete = TRUE` argument.
+
+
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(aes(color = class)) +
+  scale_color_viridis(discrete = TRUE, direction = 1,
+                      option = "viridis")
+```
+
+
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(aes(fill = class, color = class), 
+             shape = 21, alpha = 0.5, size = 4) +
+  scale_color_viridis(discrete = TRUE) +
+  scale_fill_viridis(discrete = TRUE)
+```

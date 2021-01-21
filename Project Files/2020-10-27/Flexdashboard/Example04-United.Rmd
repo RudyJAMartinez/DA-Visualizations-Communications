@@ -1,0 +1,84 @@
+---
+title: "United Airlines Sentiment"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: yeti
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+library(ggthemes)
+
+
+u1 <- read.csv("https://raw.githubusercontent.com/ashgreat/datasets/master/united_rawsenti.csv",
+               stringsAsFactors = F)
+u1$date <- as_date(u1$date)
+u2 <- u1 %>% group_by(date) %>%
+          summarise(negative = sum(negative),
+                    positive = sum(positive),
+                    disgust = sum(disgust),
+                    anger = sum(anger),
+                    joy = sum(joy)) %>%
+            mutate(sentiment = negative/positive) %>%
+            ungroup()
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Overall Sentiment
+
+```{r, fig.width=10}
+ggplot(u2, aes(date,sentiment)) +
+  geom_line() +
+  theme_minimal()
+```
+
+Row {.tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Positive
+
+```{r}
+ggplot(u2, aes(date,positive)) +
+  geom_line() +
+  theme_fivethirtyeight()
+```
+
+### Negative
+
+```{r}
+ggplot(u2, aes(date,negative)) +
+  geom_line() +
+  theme_fivethirtyeight()
+```
+
+### Anger
+
+```{r}
+ggplot(u2, aes(date,anger)) +
+  geom_line() +
+  theme_fivethirtyeight()
+```
+
+### Disgust
+
+```{r}
+ggplot(u2, aes(date,disgust)) +
+  geom_line() +
+  theme_fivethirtyeight()
+```
+
+### Joy
+
+```{r}
+ggplot(u2, aes(date,joy)) +
+  geom_line() +
+  theme_fivethirtyeight()
+```
+

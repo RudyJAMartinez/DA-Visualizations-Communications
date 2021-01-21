@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/660007/d0a9079d19dc4dbb8493a80b47937a5e
+bundleId: https://api.rpubs.com/api/v1/document/660007/d0a9079d19dc4dbb8493a80b47937a5e
+url: http://rpubs.com/Rudy_Martinez/660007
+when: 1600037835.09173

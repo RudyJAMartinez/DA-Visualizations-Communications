@@ -1,0 +1,457 @@
+---
+title: "Top 10 Billionaires"
+author: "Ashwin Malshe"
+date: "06 October 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggthemes)
+# pacman::p_load(ggplot2, dplyr, ggthemes)
+```
+
+Get the data
+
+```{r}
+top10 <- readRDS(gzcon(url("https://github.com/ashgreat/datasets/blob/master/top10_billionaires.RDS?raw=true"))) %>% 
+  filter(year != 2018)
+```
+
+Take a peek
+
+```{r}
+head(top10, 10)
+```
+
+
+### The following code will give error. Why?
+
+
+```{r eval=FALSE}
+ggplot(top10, aes(x = name, y = netWorth, fill = year)) +
+  geom_bar() +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth")
+```
+
+
+Adding identity (or you can use `geom_col`)
+
+```{r}
+ggplot(top10, aes(x = name, y = netWorth, fill = year)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth")
+
+```
+
+The position of the bars is stacked. We want them to be dodged
+
+Play around with the widths
+
+```{r}
+ggplot(top10, aes(x = name, y = netWorth, fill = year)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth")
+
+```
+
+
+Why is the dodging not working?
+
+In order to godge the bars, the `fill` argument should be mapped to a categorical variable. So I will create a new categorical variable.
+
+```{r}
+top10$year2 <- factor(top10$year)
+```
+
+
+
+```{r}
+ggplot(top10, aes(x = name, y = netWorth, fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth")
+
+```
+
+
+
+Change the legend title to "Year"
+
+```{r}
+ggplot(top10, aes(x = name, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth",
+       fill = "Year")
+
+```
+
+
+The names appear in alphabetical order. Either we can recode the names to be factors or we can change the ordering based on the ranking in ggplot.
+
+
+```{r}
+ggplot(top10, aes(x = reorder(name, rank),
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity",
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name",
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth",
+       fill = "Year")
+```
+
+Something is still missing here. Any idea what's going on?
+
+
+```{r}
+
+top2017 <- top10 %>% 
+  filter(year == 2017) %>% 
+  select(name, rank) %>% 
+  rename(rank2017 = rank)  
+
+top10 <- inner_join(top10, top2017, by = "name")
+
+# print column names
+colnames(top10)
+
+top10$name <- reorder(top10$name, top10$rank2017)
+
+```
+
+Also, split the names on two lines so that we can render them nicely
+
+```{r}
+top10$name2 = gsub(" ", " \n", top10$name)
+top10$name2 = reorder(top10$name2, top10$rank2017)
+
+```
+
+
+```{r}
+ggplot(top10, aes(x = name2, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity",
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name",
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth",
+       fill = "Year")
+```
+
+
+## Adjust the X axis ticks by changing the arguments in `element_text()`
+
+```{r}
+ggplot(top10, aes(x = name2, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity",
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = , hjust =, size = ))
+ 
+```
+
+  
+## Add commas to Y axis labels
+
+```{r}
+ggplot(top10, aes(x = name2, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity",
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name",
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth",
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 0.6)) +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+
+### Label the bars
+
+```{r}
+ggplot(top10, aes(x = name,
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity",
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth)) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.6))
+
+```
+
+
+The labels are clearly badly rendered
+We need to dodge them the same way we dodged the bars
+
+```{r}
+ggplot(top10, aes(x = name, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.6)) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9))
+```
+
+Looks better but still not the best
+Rotate the labels by 90 degrees
+
+```{r}
+ggplot(top10, aes(x = name, y = netWorth, fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.6)) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90)
+
+```
+
+
+### Push the labels inside the bars
+
+
+```{r}
+ggplot(top10, aes(x = name, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.6)) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90,
+            hjust = 1.1)
+
+```
+
+
+### Change the color of the labels
+
+```{r}
+ggplot(top10, aes(x = name, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.6)) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90,
+            hjust = 1.1,
+            color = "white")
+
+```
+
+## Make this look cool using premade themes
+
+Go to the top of the file and insert `library(ggthemes)` in the setup chunk.
+
+```{r}
+ggplot(top10, aes(x = name2, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = NULL, 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.6)) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90,
+            hjust = 1.1,
+            color = "white") +
+  theme_economist()
+```
+
+
+
+Usually themes have their own parameters and they can override our themes.
+So let's put our theme the last.
+
+```{r}
+ggplot(top10, aes(x = name2, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = NULL, 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90,
+            hjust = 1.1,
+            color = "white") +
+  theme_economist() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 0.5, 
+                                   vjust = 0.7))
+
+```
+
+Save the file to your hard disk
+
+```{r eval=FALSE}
+ggsave("Top_10_Billionaires.png", 
+       width = 9, 
+       height = 6)
+```
+
+### Try a different theme
+
+```{r}
+ggplot(top10, aes(x = name2, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = NULL, 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90,
+            hjust = 1.1,
+            color = "white") +
+  theme_fivethirtyeight() +
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5, 
+                                   vjust = 0.7))
+
+```
+
+Save the file to your hard disk
+
+```{r eval=FALSE}
+ggsave("Top_10_Billionaires.png",
+       width = 9,
+       height = 6,
+       dpi=900)
+```
+
+```{r}
+ggsave("Top_10_Billionaires.pdf",
+       width = 9,
+       height = 6,
+       dpi=900)
+```
+
+
+Are you nostalgic about Excel graphs?
+
+```{r}
+ggplot(top10, aes(x = name, 
+                  y = netWorth, 
+                  fill = year2)) +
+  geom_bar(stat = "identity", 
+           position = position_dodge(width = 0.9)) +
+  labs(x = "Name", 
+       y = "Net Worth in Million $",
+       title = "Top 10 Billionaires' Net Worth", 
+       fill = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(aes(label = netWorth),
+            position = position_dodge(width = 0.9),
+            angle = 90,
+            hjust = 1.1,
+            color = "white") +
+  theme_excel() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.7))
+
+```
+
+
+
+## Original Graph
+
+
+```{r}
+ggplot(top10, aes(x = name2,
+                  y = netWorth,
+                  fill = year2)) +
+  geom_bar(stat = "identity",
+           position = position_dodge(width = 0.9)) +
+  geom_text(aes(label = scales::comma(netWorth)),
+            angle = 90,
+            position = position_dodge(width = 0.9),
+            hjust = 1.2,
+            color = "white") +
+  theme_fivethirtyeight() +
+  scale_y_continuous(labels = scales::comma) +
+  xlab("Name") +
+  ylab("Net Worth in Million $") +
+  guides(fill = guide_legend(title = NULL)) +
+  ggtitle("Net Worth in Million $")
+
+```
+
+
+

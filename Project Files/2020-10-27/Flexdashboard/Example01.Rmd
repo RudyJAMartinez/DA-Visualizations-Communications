@@ -1,0 +1,44 @@
+---
+title: "Example 1 - Flexdashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+```
+
+Column {data-width=650}
+-------
+
+### Chart A
+
+```{r}
+
+ggplot(diamonds,aes(carat,price)) +
+  geom_point()
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+ggplot(diamonds,aes(carat,price)) +
+  geom_point(aes(color = cut))
+
+```
+
+### Chart C
+
+```{r}
+ggplot(diamonds,aes(carat,price)) +
+  geom_point(aes(color = clarity))
+
+```
+

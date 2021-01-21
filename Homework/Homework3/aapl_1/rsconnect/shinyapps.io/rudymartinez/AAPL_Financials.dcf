@@ -1,0 +1,12 @@
+name: AAPL_Financials
+title: AAPL_Financials
+username:
+account: rudymartinez
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3136973
+bundleId: 3805290
+url: https://rudymartinez.shinyapps.io/AAPL_Financials/
+when: 1604182342.69854
+asMultiple: FALSE
+asStatic: FALSE

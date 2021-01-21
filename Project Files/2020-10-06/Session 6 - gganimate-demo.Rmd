@@ -1,0 +1,111 @@
+---
+title: "gganimate"
+author: "Ashwin Malshe"
+date: "06 October 2020"
+output: html_document
+---
+
+Install `gganimate` package by executing the following command in in the console below.
+
+`install.packages("gganimate")`
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(gganimate)
+library(dplyr)
+```
+
+```{r}
+plot1 <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  theme_minimal()
+```
+
+In case you want to take a look:
+```{r}
+print(plot1)
+```
+
+
+```{r}
+anim1 <- plot1 +
+  transition_states(class,
+                    transition_length = 2,
+                    state_length = 1)
+```
+
+```{r}
+print(anim1)
+```
+
+
+```{r}
+anim1 + labs(title = 'Class: {closest_state}')
+```
+
+
+## Add color to the plot
+
+```{r}
+plot2 <- ggplot(mpg, aes(displ, hwy, color = class)) +
+  geom_point(show.legend = FALSE) +
+  theme_minimal()
+```
+
+
+```{r}
+print(plot2)
+```
+
+
+```{r}
+anim2 <- plot2 +
+  transition_states(class,
+                    transition_length = 2,
+                    state_length = 1) +
+  labs(title = 'Class: {closest_state}')
+```
+
+```{r}
+print(anim2)
+```
+
+
+Remove the jerkiness by using `group`.
+
+```{r}
+plot3 <- ggplot(mpg, 
+                aes(displ, hwy, 
+                    color = class, group = 1)) +
+  geom_point(show.legend = FALSE) +
+  theme_minimal()
+```
+
+```{r}
+anim3 <- plot3 +
+  transition_states(class,
+                    transition_length = 2,
+                    state_length = 1) +
+  labs(title = 'Class equals {closest_state}')
+```
+
+```{r}
+animate(anim3, nframes = 50)
+```
+
+```{r}
+anim_save(here::here("Images", "anim_20201002.gif"))
+```
+
+
+## Resources
+
+Unfortunately the package doesn't have a lot of examples. The developer of the package Thomas Pedersen also manages `ggplot2` so he is quite busy. However, here are two good resource - 
+
+The official package website for `gganimate`:
+
+https://gganimate.com
+
+Go to the bottom of this page for sveral examples:
+
+https://github.com/ropenscilabs/learngganimate

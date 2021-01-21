@@ -1,0 +1,88 @@
+---
+title: 'Session 2'
+author: "Rudy Martinez"
+date: "9/1/2020"
+output: html_document
+---
+
+This next R code chunk will output a vector.
+
+```{r Vector 1}
+vec1 = c("a", "b", "c", "d", "e", "f")
+print(vec1)
+```
+
+This next R code chunk will output a numeric vector.
+
+```{r Vector 2}
+vec2 = c(3.14159, 1.414, 5.678, 9.01)
+print(vec2)
+```
+
+## Matrix
+A matrix is a two-dimensional vector.
+
+```{r Matrix 1}
+m1 = matrix(c(3.14159, 1.414, 5.678, 9.01),
+            nrow = 2,
+            ncol = 2)
+print(m1)
+```
+
+```{r Matrix 2}
+m2 = matrix(vec2, nrow = 2)
+print(m2)
+```
+
+## Data Frame
+```{r Data Frame}
+d1 = data.frame(name = c("Rudy", "John", "Andrew"), 
+                age = c(20, 21, 22),
+                male = c(TRUE, TRUE, TRUE),
+                female = c(FALSE, FALSE, FALSE))
+print(d1)
+```
+
+## Subsetting Data Frame
+Print first column of d1
+
+```{r Subsetting Data Frame 1}
+print(d1[, 1])
+
+```
+
+Output the intersection of second row and third column
+
+```{r Subsetting Data Frame 2}
+print(d1[2,3])
+```
+
+Print the column names of the data frame
+```{r Column Names}
+names(d1)
+```
+
+Print the first two rows and first two columns of d1
+```{r First Two Rows / Columns 1}
+print(d1[c(1,2),c(1,2)])
+```
+
+OR
+
+```{r First Two Rows / Columns 2}
+print(d1[1:2, 1:2])
+```
+
+Print 1st and 3rd row and 1st and 3rd columns
+```{r First and Third Row / Column}
+print(d1[c(1,3), c(1,3)])
+```
+
+## List
+```{r List}
+list1 = list(v1 = vec1, 
+             v2 = vec2,
+             matrix = m1,
+             dataframe = d1)
+```
+

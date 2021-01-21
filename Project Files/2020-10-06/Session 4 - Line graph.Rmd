@@ -1,0 +1,173 @@
+---
+title: "Line Graph"
+author: "Ashwin Malshé"
+date: "10/5/2020"
+output: 
+  html_document:
+    theme: readable
+---
+
+In this example, I have used `janitor` package. You can install it by running this line in the console:
+
+install.packages("janitor")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor) # to clean up the variable names
+theme_set(theme_minimal())
+```
+
+```{r}
+tsla = read_csv("https://raw.githubusercontent.com/ashgreat/DA6233/master/TSLA.csv") %>% 
+  clean_names()
+```
+
+
+Let's take a look at what we just read.
+
+```{r}
+head(tsla)
+```
+
+This file contains Tesla's monthly stock price since June 2010 until September 2020.
+
+Usually, stock prices on their own are not informative. Instead, the percentage change from the previous price, or the stock returns, are more meaningful to the investors. We don't have stock returns in this data set.
+
+The formula for calculating the stock return is given by:
+
+$$ret_{it} = \frac {price_{it}-price_{it-1}}{price_{it-1}},$$
+where, $ret_{it}$ is the stock return and $price_{it}$ is the stock price of stock $i$ for month $t$.
+
+```{r}
+tsla <- tsla %>% 
+  arrange(date) %>% # Make sure that the dates follow an ascending order
+  mutate(stkret = (adj_close - lag(adj_close)) / lag(adj_close))
+```
+
+
+```{r}
+head(tsla)
+tail(tsla)
+```
+
+
+<div style="background-color: #ffbfd3; padding: 10px; border: 5px solid #962fbf;">
+
+A line graph is used when time is mapped to the X axis and for every unique value of the X axis variable, we have a unique value of the Y axis variable. This means that a line graph, ideally, always progresses from left to right.
+
+</div>
+
+## Stock price
+
+We begin by plotting Tesla's stock price
+
+```{r fig.width=8}
+
+tsla %>% 
+  ggplot(aes(x = date, y = adj_close)) +
+  geom_line()
+
+```
+
+All these years, Tesla stock performed terribly. But 2020 has been a great year for the stock!
+
+
+Shade the area under the curve (i.e., the line)
+
+```{r fig.width=8}
+tsla %>% 
+  ggplot(aes(x = date, y = adj_close)) +
+  geom_line() +
+  geom_area(alpha = 0.2)
+```
+
+
+
+## Stock returns
+
+```{r fig.width=8}
+tsla %>% 
+  ggplot(aes(x = date, y = stkret)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+
+Line plot with points
+
+```{r fig.width=8}
+tsla %>% 
+  ggplot(aes(x = date, y = stkret)) +
+  geom_line(color = "#962fbf") +
+  geom_point(color = "#d62976", size = 1) +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+
+
+Draw a regression line
+
+```{r fig.width=8}
+tsla %>% 
+  ggplot(aes(x = date, y = stkret)) +
+  geom_line() +
+  geom_smooth(method = "lm") +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+ Shaded area under the curve
+
+```{r fig.width=8}
+tsla %>% 
+  ggplot(aes(x = date, y = stkret)) +
+  geom_line() +
+  geom_area(alpha = 0.2) +
+  scale_y_continuous(labels = scales::label_percent())
+```
+
+Can we shade the negative and positive areas in different colors? How will you do it?
+
+As it turns out, it is not quite easy to do it. This is the way to go:
+https://stackoverflow.com/a/18009173
+
+Any idea why is this so difficult? Also, check out another reply from SO:
+
+https://stackoverflow.com/a/57120197
+
+Why this doesn't work?
+
+
+## Dual Y axis
+
+For several years, Hadley Wickham resisted adding a second Y axis to the line graph. In general, it results in a misleading graphic. However, more recently he relented and now we can add a second Y axis on the right.
+
+
+In the following plot, we will draw stock price and the stock volume. Before that, we need to check the range of values for both.
+
+```{r}
+tsla %>% 
+  select(adj_close, volume) %>% 
+  summary()
+```
+
+
+As the maximum for stock price is around 500 and for the volume is 2.5 billion, we have a ratio of 1 : 5 million between the two variables. We need this information while making a dual Y axis plot in ggplot2.
+
+
+```{r fig.width=8}
+tsla %>% 
+  ggplot(aes(x = date, y = adj_close)) +
+  geom_line(color = "#ff5252") +
+  geom_line(aes(y = volume / 5e+06),
+            color = "#3366ff") +
+  scale_y_continuous(name = "Closing price",
+                     sec.axis = sec_axis(~.*5e+06, name = "Share volume"))
+
+```
+
+
+
+
+
+

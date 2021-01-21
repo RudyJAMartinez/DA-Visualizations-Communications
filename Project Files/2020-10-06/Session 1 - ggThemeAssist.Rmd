@@ -1,0 +1,35 @@
+---
+title: "ggThemeAssist"
+author: "Ashwin Malshe"
+date: "10/06/2019"
+output: html_document
+---
+
+Install `ggThemeAssist` from CRAN. Please DON'T put the next two lines in an R chunk. You need to do this only once. So, just copy and paste each line below in your RStudio console and execute it. Then restart RStudio.
+
+install.packages("ggThemeAssist")
+library(ggThemeAssist)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+Create a simple plot and then enhance using `ggThemeAssist`
+
+```{r}
+p1 <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+Now highlight `p1` below and then select "ggplot Theme Assistant" from "Addins" button above.
+
+```{r message=FALSE, warning=FALSE, error=FALSE}
+p1 + theme(panel.grid.major = element_line(colour = "azure3"), 
+    panel.grid.minor = element_line(colour = NA), 
+    panel.background = element_rect(fill = NA)) +labs(x = "Displacement", y = "Highway Miles Per Gallon")
+```
+
+
+

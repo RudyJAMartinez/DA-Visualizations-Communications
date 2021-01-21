@@ -1,0 +1,39 @@
+---
+title: "Flexdashboard Example 01"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+ggplot(mpg, aes(cyl, hwy)) +
+  geom_point()
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+ggplot(mpg, aes(cyl, hwy)) +
+  geom_point(aes(color = class))
+```
+
+### Chart C
+
+```{r}
+ggplot(mpg, aes(cyl, hwy)) +
+  geom_point(aes(color = cyl))
+```
+
